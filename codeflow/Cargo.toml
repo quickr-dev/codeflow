@@ -2,6 +2,11 @@
 name = "codeflow"
 version = "0.1.0"
 edition = "2021"
+authors = ["Rafael Garcia <rafbgarcia@gmail.com>"]
+description = "A tool to extract codeflow annotations from project files"
+license = "MIT"
+repository = "https://github.com/quickr/codeflow"
+
 
 [dependencies]
 anyhow = "1.0.97"
