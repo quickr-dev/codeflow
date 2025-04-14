@@ -64,7 +64,9 @@ export function activate(context: vscode.ExtensionContext) {
           return item;
         },
       },
-      ...getCompletionTriggerCharacters(),
+      " ",
+      "-",
+      ">",
     );
 
   const linkProvider = vscode.languages.registerDocumentLinkProvider(
@@ -202,11 +204,4 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
   console.log("CodeFlow Navigator is deactivated");
-}
-
-function getCompletionTriggerCharacters(): string[] {
-  const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(
-    "",
-  );
-  return [...letters, " ", "-", ">", "\b"];
 }
