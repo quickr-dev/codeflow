@@ -180,10 +180,14 @@ export function activate(context: vscode.ExtensionContext) {
   // Update graph when files change
   const fileWatcher = vscode.workspace.createFileSystemWatcher("**/*");
   fileWatcher.onDidChange((uri) => {
-    documentManager.handleFileChange(uri.fsPath);
+    if (!uri.path.includes(".codeflow")) {
+      documentManager.handleFileChange(uri.fsPath);
+    }
   });
   fileWatcher.onDidDelete((uri) => {
-    documentManager.handleFileDelete(uri.fsPath);
+    if (!uri.path.includes(".codeflow")) {
+      documentManager.handleFileDelete(uri.fsPath);
+    }
   });
 
   context.subscriptions.push(
