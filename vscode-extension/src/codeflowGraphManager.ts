@@ -75,8 +75,7 @@ export class CodeflowGraphManager {
           path,
           vscode.CompletionItemKind.Reference,
         );
-        item.detail = path;
-        item.insertText = path;
+        item.insertText = path.replace(segment, "");
         completionItems.push(item);
       }
     }

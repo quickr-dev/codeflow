@@ -23,10 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCompletionItemProvider(
       { pattern: "**" },
       {
-        provideCompletionItems(
-          document: vscode.TextDocument,
-          position: vscode.Position,
-        ) {
+        provideCompletionItems(document, position) {
           const line = document.lineAt(position).text;
 
           if ("@codeflow".includes(line.slice(line.indexOf("@")))) {
@@ -48,10 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCompletionItemProvider(
       { pattern: "**" },
       {
-        provideCompletionItems(
-          document: vscode.TextDocument,
-          position: vscode.Position,
-        ) {
+        provideCompletionItems(document, position) {
           const line = document.lineAt(position).text;
           if (!line.includes("@codeflow ")) {
             return undefined;
@@ -150,7 +144,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const scanCommand = vscode.commands.registerCommand(
     "codeflow.scan",
-    async () => {
+    async function forceRebuildGraph() {
       const workspaceFolders = vscode.workspace.workspaceFolders;
 
       if (workspaceFolders && workspaceFolders.length > 0) {
