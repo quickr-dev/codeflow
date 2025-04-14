@@ -1,0 +1,48 @@
+{
+  "name": "codeflow-navigator",
+  "displayName": "CodeFlow Navigator",
+  "description": "Navigate through code with @codeflow annotations",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codeflow.scan",
+        "title": "CodeFlow: Scan Project"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.customDefinition",
+        "key": "cmd+click",
+        "mac": "cmd+click",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "biome lint ./src",
+    "format": "biome format ./src --write",
+    "build": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.5.3",
+    "@types/node": "^16.18.70",
+    "@types/vscode": "^1.85.0",
+    "bun-types": "latest",
+    "esbuild": "^0.19.11",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "ignore": "^5.3.0"
+  }
+}
