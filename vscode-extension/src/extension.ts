@@ -1,9 +1,12 @@
+import * as fs from "fs";
+import ignore from "ignore";
+import * as path from "path";
 import * as vscode from "vscode";
 import { CodeflowDocumentManager } from "./codeflowDocumentManager";
 import { CodeflowGraphManager } from "./codeflowGraphManager";
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log("CodeFlow Navigator is now active");
+  console.log(">>> CodeFlow Navigator is now active");
 
   const graphManager = new CodeflowGraphManager();
   const documentManager = new CodeflowDocumentManager(graphManager);
@@ -180,12 +183,12 @@ export function activate(context: vscode.ExtensionContext) {
   // Update graph when files change
   const fileWatcher = vscode.workspace.createFileSystemWatcher("**/*");
   fileWatcher.onDidChange((uri) => {
-    if (!uri.path.includes(".codeflow")) {
+    if (shouldProcessFile(uri)) {
       documentManager.handleFileChange(uri.fsPath);
     }
   });
   fileWatcher.onDidDelete((uri) => {
-    if (!uri.path.includes(".codeflow")) {
+    if (shouldProcessFile(uri)) {
       documentManager.handleFileDelete(uri.fsPath);
     }
   });
@@ -202,4 +205,37 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
   console.log("CodeFlow Navigator is deactivated");
+}
+
+const ignoreInstance = createIgnoreInstance();
+
+function createIgnoreInstance() {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders) return null;
+
+  const rootPath = workspaceFolders[0].uri.fsPath;
+
+  const gitignorePath = path.join(rootPath, ".gitignore");
+  let gitignorePatterns: string[] = [];
+
+  if (fs.existsSync(gitignorePath)) {
+    const gitignoreContent = fs.readFileSync(gitignorePath, "utf8");
+    gitignorePatterns = gitignoreContent
+      .split("\n")
+      .filter((line) => line && !line.startsWith("#"));
+  }
+
+  return ignore().add(gitignorePatterns).add(".codeflow");
+}
+
+function shouldProcessFile(uri: vscode.Uri) {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders) return true;
+
+  const rootPath = workspaceFolders[0].uri.fsPath;
+  const relativePath = path.relative(rootPath, uri.fsPath);
+
+  if (!ignoreInstance) return true;
+
+  return !ignoreInstance.ignores(relativePath);
 }
