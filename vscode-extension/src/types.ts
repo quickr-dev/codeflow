@@ -1,9 +1,4 @@
-export enum CodeflowNodeType {
-  Annotation = "annotation",
-}
-
 export interface CodeflowNode {
-  type: CodeflowNodeType;
   filePath: string;
   lineNumber: number;
 }

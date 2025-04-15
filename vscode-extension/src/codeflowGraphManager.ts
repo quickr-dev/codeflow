@@ -1,9 +1,10 @@
+import axios from "axios";
 import * as fs from "fs/promises";
 import ignore, { Ignore } from "ignore";
 import * as path from "path";
 import * as vscode from "vscode";
 import { scanFileForAnnotations } from "./fileScanner";
-import { CodeflowGraph, CodeflowNodeType } from "./types";
+import { CodeflowGraph, CodeflowNode } from "./types";
 
 export class CodeflowGraphManager {
   private graph: CodeflowGraph = { nodes: {} };
@@ -160,7 +161,6 @@ export class CodeflowGraphManager {
       // Update graph with annotations
       for (const annotation of annotations) {
         this.graph.nodes[annotation.path] = {
-          type: CodeflowNodeType.Annotation,
           filePath: filePath,
           lineNumber: annotation.lineNumber,
         };
@@ -204,7 +204,24 @@ export class CodeflowGraphManager {
     // Add new annotations
     await this.scanFile(filePath);
 
-    await this.saveGraphToCache();
+    await Promise.all([this.updateProject(), this.saveGraphToCache()]);
+  }
+
+  async updateProject(): Promise<void> {
+    console.log(">>> updating project");
+    const graph = this.graph;
+    const data: (CodeflowNode & { node: string; fileContent: string })[] = [];
+
+    for (const [node, nodeData] of Object.entries(graph.nodes)) {
+      data.push({
+        node,
+        filePath: nodeData.filePath,
+        lineNumber: nodeData.lineNumber,
+        fileContent: await fs.readFile(nodeData.filePath, "utf-8"),
+      });
+    }
+
+    await axios.post("http://localhost:3000/api/graphs", data);
   }
 
   /**
