@@ -217,6 +217,8 @@ export class CodeflowGraphManager {
         name: node,
         filePath: nodeData.filePath,
         lineNumber: nodeData.lineNumber,
+        // No need to save this in the local cache (.codeflow/graph.json).
+        // We send the file contents to the server to display it in the UI.
         fileContent: await fs.readFile(nodeData.filePath, "utf-8"),
       });
     }
