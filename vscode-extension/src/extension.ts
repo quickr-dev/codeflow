@@ -180,6 +180,7 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
+  // @codeflow(diagram->view, 1)
   // Update graph when files change
   const fileWatcher = vscode.workspace.createFileSystemWatcher("**/*");
   fileWatcher.onDidChange((uri) => {

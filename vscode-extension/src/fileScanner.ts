@@ -1,11 +1,6 @@
 import * as fs from "fs/promises";
+import { parseCodeflowDefinition } from "./lib/parser";
 import { CodeflowAnnotation } from "./types";
-
-/**
- * Pattern to match @codeflow annotations
- * Captures the path after @codeflow
- */
-const ANNOTATION_PATTERN = /@codeflow\s+([^@\s]+)/g;
 
 /**
  * Scan a file for @codeflow annotations
@@ -34,16 +29,18 @@ export function extractAnnotations(
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const matches = [...line.matchAll(ANNOTATION_PATTERN)];
-
-    for (const match of matches) {
-      const path = match[1];
-      annotations.push({
-        path,
-        filePath,
-        lineNumber: i,
-      });
+    if (!line.includes("@codeflow")) {
+      continue;
     }
+
+    const params = parseCodeflowDefinition(line);
+
+    annotations.push({
+      path: params.pathDefinition,
+      options: params.options,
+      filePath,
+      lineNumber: i,
+    });
   }
 
   return annotations;

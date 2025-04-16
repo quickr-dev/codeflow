@@ -4,10 +4,11 @@ import ignore, { Ignore } from "ignore";
 import * as path from "path";
 import * as vscode from "vscode";
 import { scanFileForAnnotations } from "./fileScanner";
-import { CodeflowGraph, CodeflowNode } from "./types";
+import { CodeflowAnnotation, CodeflowGraph } from "./types";
 
 export class CodeflowGraphManager {
   private graph: CodeflowGraph = { nodes: {} };
+  private annotations: CodeflowAnnotation[] = [];
   private cachePath = "";
   private initialized = false;
 
@@ -156,10 +157,10 @@ export class CodeflowGraphManager {
    */
   async scanFile(filePath: string): Promise<void> {
     try {
-      const annotations = await scanFileForAnnotations(filePath);
+      this.annotations = await scanFileForAnnotations(filePath);
 
       // Update graph with annotations
-      for (const annotation of annotations) {
+      for (const annotation of this.annotations) {
         this.graph.nodes[annotation.path] = {
           filePath: filePath,
           lineNumber: annotation.lineNumber,
@@ -204,22 +205,22 @@ export class CodeflowGraphManager {
     // Add new annotations
     await this.scanFile(filePath);
 
-    await Promise.all([this.updateProject(), this.saveGraphToCache()]);
+    await Promise.all([
+      // @codeflow(diagram->view#2, { lines: 1 }))
+      this.updateProject(),
+      this.saveGraphToCache(),
+    ]);
   }
 
+  // @codeflow(diagram->view#3))
   async updateProject(): Promise<void> {
     console.log(">>> updating project");
-    const graph = this.graph;
-    const data: (CodeflowNode & { name: string; fileContent: string })[] = [];
+    const data: (CodeflowAnnotation & { fileContent: string })[] = [];
 
-    for (const [node, nodeData] of Object.entries(graph.nodes)) {
+    for (const annotation of this.annotations) {
       data.push({
-        name: node,
-        filePath: nodeData.filePath,
-        lineNumber: nodeData.lineNumber,
-        // No need to save this in the local cache (.codeflow/graph.json).
-        // We send the file contents to the server to display it in the UI.
-        fileContent: await fs.readFile(nodeData.filePath, "utf-8"),
+        ...annotation,
+        fileContent: await fs.readFile(annotation.filePath, "utf-8"),
       });
     }
 

@@ -11,6 +11,7 @@ export interface CodeflowGraph {
 
 export interface CodeflowAnnotation {
   path: string;
+  options: Record<string, string>;
   filePath: string;
   lineNumber: number;
 }
