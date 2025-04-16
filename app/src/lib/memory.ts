@@ -1,14 +1,19 @@
-interface CodeflowNode {
-	filePath: string;
-	lineNumber: number;
-}
+import { z } from "zod";
 
-interface CodeflowGraph {
-	nodes: {
-		[path: string]: CodeflowNode;
-	};
-}
+export type Memory = z.output<typeof MemorySchema>;
+export const MemorySchema = z.object({
+  graph: z.array(
+    z.object({
+      name: z.string(),
+      filePath: z.string(),
+      lineNumber: z.number(),
+      fileContent: z.string(),
+    }),
+  ),
+});
 
-export const memory: { graph: CodeflowGraph } = {
-	graph: { nodes: {} },
+// @codeflow memory
+export const memory: Memory = {
+  // @codeflow memory->graph
+  graph: [],
 };

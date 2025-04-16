@@ -1,8 +1,20 @@
 {
   "nodes": {
-    "graphs->api": {
+    "memory->graph->render": {
+      "filePath": "/Users/rafa/repos/quickr/app/src/app/diagram.tsx",
+      "lineNumber": 7
+    },
+    "memory": {
+      "filePath": "/Users/rafa/repos/quickr/app/src/lib/memory.ts",
+      "lineNumber": 14
+    },
+    "memory->graph": {
+      "filePath": "/Users/rafa/repos/quickr/app/src/lib/memory.ts",
+      "lineNumber": 16
+    },
+    "memory->graph->save": {
       "filePath": "/Users/rafa/repos/quickr/app/src/app/api/graphs/route.ts",
-      "lineNumber": 3
+      "lineNumber": 5
     }
   }
 }

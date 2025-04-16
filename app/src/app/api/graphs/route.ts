@@ -1,13 +1,12 @@
-import { memory } from "@/lib/memory";
+import { MemorySchema, memory } from "@/lib/memory";
 import type { NextRequest } from "next/server";
 
-// @codeflow graphs->api
 export const POST = async (req: NextRequest) => {
-	const data = await req.json();
-	memory.graph = data;
-	console.log(">>>", data);
+  const graph = await req.json();
+  // @codeflow memory->graph->save
+  memory.graph = MemorySchema.parse({ graph }).graph;
 
-	return new Response(null, {
-		status: 200,
-	});
+  return new Response(null, {
+    status: 200,
+  });
 };

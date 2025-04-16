@@ -210,11 +210,11 @@ export class CodeflowGraphManager {
   async updateProject(): Promise<void> {
     console.log(">>> updating project");
     const graph = this.graph;
-    const data: (CodeflowNode & { node: string; fileContent: string })[] = [];
+    const data: (CodeflowNode & { name: string; fileContent: string })[] = [];
 
     for (const [node, nodeData] of Object.entries(graph.nodes)) {
       data.push({
-        node,
+        name: node,
         filePath: nodeData.filePath,
         lineNumber: nodeData.lineNumber,
         fileContent: await fs.readFile(nodeData.filePath, "utf-8"),
