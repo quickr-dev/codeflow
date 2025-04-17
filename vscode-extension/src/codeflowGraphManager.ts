@@ -8,7 +8,7 @@ import { CodeflowAnnotation, CodeflowGraph } from "./types";
 
 export class CodeflowGraphManager {
   private graph: CodeflowGraph = { nodes: {} };
-  private annotations: CodeflowAnnotation[] = [];
+  private annotations: Record<string, CodeflowAnnotation> = {};
   private cachePath = "";
   private initialized = false;
 
@@ -157,10 +157,10 @@ export class CodeflowGraphManager {
    */
   async scanFile(filePath: string): Promise<void> {
     try {
-      this.annotations = await scanFileForAnnotations(filePath);
+      const fileAnnotations = await scanFileForAnnotations(filePath);
 
-      // Update graph with annotations
-      for (const annotation of this.annotations) {
+      for (const annotation of fileAnnotations) {
+        this.annotations[annotation.path] = annotation;
         this.graph.nodes[annotation.path] = {
           filePath: filePath,
           lineNumber: annotation.lineNumber,
@@ -206,18 +206,17 @@ export class CodeflowGraphManager {
     await this.scanFile(filePath);
 
     await Promise.all([
-      // @codeflow(diagram->view#2, { lines: 1 }))
+      // @codeflow(diagram->view#2)
       this.updateProject(),
       this.saveGraphToCache(),
     ]);
   }
 
-  // @codeflow(diagram->view#3))
+  // @codeflow(diagram->view#3)
   async updateProject(): Promise<void> {
-    console.log(">>> updating project");
     const data: (CodeflowAnnotation & { fileContent: string })[] = [];
 
-    for (const annotation of this.annotations) {
+    for (const annotation of Object.values(this.annotations)) {
       data.push({
         ...annotation,
         fileContent: await fs.readFile(annotation.filePath, "utf-8"),

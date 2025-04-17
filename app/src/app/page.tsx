@@ -2,10 +2,11 @@ import { memory } from "@/lib/memory";
 import { Diagram } from "./diagram";
 
 export default function Page() {
-  // @codeflow memory->graph->render
+  // @codeflow(diagram->view#5)
+  const graph = memory.annotations;
   return (
     <div>
-      <Diagram memory={memory} />
+      <Diagram graph={graph} />
     </div>
   );
 }

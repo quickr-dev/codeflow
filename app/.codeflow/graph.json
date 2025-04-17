@@ -1,20 +1,16 @@
 {
   "nodes": {
-    "memory->graph->render": {
-      "filePath": "/Users/rafa/repos/quickr/app/src/app/diagram.tsx",
+    "diagram->view#5": {
+      "filePath": "/Users/rafa/repos/codeflow/app/src/app/page.tsx",
+      "lineNumber": 4
+    },
+    "diagram->view#4": {
+      "filePath": "/Users/rafa/repos/codeflow/app/src/app/api/graphs/route.ts",
+      "lineNumber": 3
+    },
+    "diagram->view#6": {
+      "filePath": "/Users/rafa/repos/codeflow/app/src/app/diagram.tsx",
       "lineNumber": 7
-    },
-    "memory": {
-      "filePath": "/Users/rafa/repos/quickr/app/src/lib/memory.ts",
-      "lineNumber": 14
-    },
-    "memory->graph": {
-      "filePath": "/Users/rafa/repos/quickr/app/src/lib/memory.ts",
-      "lineNumber": 16
-    },
-    "memory->graph->save": {
-      "filePath": "/Users/rafa/repos/quickr/app/src/app/api/graphs/route.ts",
-      "lineNumber": 5
     }
   }
 }

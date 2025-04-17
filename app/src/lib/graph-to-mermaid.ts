@@ -1,70 +1,47 @@
-export function convertGraphToMermaid(paths: string[]): string {
-  const nodeMap = createNodeMap(paths);
-  const connections = identifyConnections(paths, nodeMap);
-  return generateMermaidSyntax(nodeMap, connections);
-}
-
 /**
- * Assign a unique ID to each node to avoid conflicts with Mermaid keywords.
+ * Converts an array of paths to Mermaid flowchart syntax
+ * @param paths Array of paths in the format "node1->node2->node3#stepNumber"
+ * @returns Mermaid flowchart syntax string
  */
-function createNodeMap(paths: string[]): Map<string, string> {
-  const nodeMap = new Map<string, string>();
-  let nodeCounter = 0;
+export function convertGraphToMermaid(paths: string[]): string {
+  const uniquePaths = new Set<string>();
+  const pathsWithoutIds = new Map<string, string[]>();
 
   for (const path of paths) {
-    const segments = path.split("->");
-    for (const segment of segments) {
-      if (!nodeMap.has(segment)) {
-        nodeMap.set(segment, `node${nodeCounter++}`);
+    const [fullPath] = path.split("#");
+
+    const pathSegments = fullPath.split("->");
+    const leafNodePath = pathSegments.join("->");
+    const leafNode = pathSegments[pathSegments.length - 1];
+
+    if (!pathsWithoutIds.has(leafNode)) {
+      pathsWithoutIds.set(leafNode, []);
+    }
+    pathsWithoutIds.get(leafNode)?.push(leafNodePath);
+
+    for (let i = 0; i < pathSegments.length - 1; i++) {
+      const connection = `${pathSegments[i]}-->${pathSegments[i + 1]}`;
+      uniquePaths.add(connection);
+    }
+  }
+
+  let result = "flowchart TD\n";
+
+  for (const path of uniquePaths) {
+    result += `${path}\n`;
+  }
+
+  if (pathsWithoutIds.size > 0) {
+    result += "\n";
+
+    for (const [leafNode, fullPaths] of pathsWithoutIds.entries()) {
+      const uniqueFullPaths = [...new Set(fullPaths)];
+
+      for (const fullPath of uniqueFullPaths) {
+        result += `click ${leafNode} call didClickLeafNode("${fullPath}")\n`;
       }
     }
   }
 
-  return nodeMap;
-}
-
-export function identifyConnections(
-  paths: string[],
-  nodeMap: Map<string, string>,
-): Array<[string, string]> {
-  const connectionSet = new Set<string>();
-
-  for (const path of paths) {
-    const segments = path.split("->");
-    for (let i = 0; i < segments.length - 1; i++) {
-      const fromId = nodeMap.get(segments[i]);
-      const toId = nodeMap.get(segments[i + 1]);
-      if (!fromId || !toId) {
-        continue;
-      }
-
-      connectionSet.add(`${fromId}->${toId}`);
-    }
-  }
-
-  return Array.from(connectionSet).map((conn) => {
-    const [from, to] = conn.split("->");
-    return [from, to];
-  });
-}
-
-export function generateMermaidSyntax(
-  nodeMap: Map<string, string>,
-  connections: Array<[string, string]>,
-): string {
-  let mermaidCode = "flowchart TD\n";
-
-  for (const [nodeName, id] of nodeMap.entries()) {
-    mermaidCode += `${id}["${capitalize(nodeName)}"]\n`;
-  }
-
-  for (const [from, to] of connections) {
-    mermaidCode += `${from} --> ${to}\n`;
-  }
-
-  return mermaidCode;
-}
-
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.replaceAll("_", " ").slice(1);
+  return result;
 }

@@ -1,10 +1,11 @@
 import { MemorySchema, memory } from "@/lib/memory";
 import type { NextRequest } from "next/server";
 
+// @codeflow(diagram->view#4)
 export const POST = async (req: NextRequest) => {
-  const graph = await req.json();
-  // @codeflow memory->graph->save
-  memory.graph = MemorySchema.parse({ graph }).graph;
+  const data = await req.json();
+  console.log(">>>", data);
+  memory.annotations = MemorySchema.parse({ annotations: data }).annotations;
 
   return new Response(null, {
     status: 200,

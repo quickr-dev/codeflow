@@ -5,11 +5,11 @@ import type { Memory } from "@/lib/memory";
 import mermaid from "mermaid";
 import { useEffect } from "react";
 
-// @codeflow memory->graph->render
-export function Diagram({ memory }: { memory: Memory }) {
+// @codeflow(diagram->view#6)
+export function Diagram({ graph }: { graph: Memory["annotations"] }) {
   useEffect(() => {
-    window.callback = () => {
-      alert("A callback was triggered");
+    window.didClickLeafNode = (nodeId: string) => {
+      console.log(">>>", nodeId);
     };
 
     mermaid.initialize({
@@ -22,12 +22,12 @@ export function Diagram({ memory }: { memory: Memory }) {
         curve: "cardinal",
       },
     });
-  }, []);
+  });
 
   return (
     <div>
       <pre className="mermaid">
-        {convertGraphToMermaid(memory.graph.map((node) => node.name))}
+        {convertGraphToMermaid(graph.map((node) => node.path))}
       </pre>
     </div>
   );
