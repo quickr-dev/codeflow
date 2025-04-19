@@ -1,16 +1,22 @@
 {
   "nodes": {
-    "diagram->view#5": {
-      "filePath": "/Users/rafa/repos/codeflow/app/src/app/page.tsx",
-      "lineNumber": 4
-    },
     "diagram->view#4": {
+      "path": "diagram->view#4",
+      "options": {},
       "filePath": "/Users/rafa/repos/codeflow/app/src/app/api/graphs/route.ts",
-      "lineNumber": 3
+      "lineNumber": 5
+    },
+    "diagram->view#5": {
+      "path": "diagram->view#5",
+      "options": {},
+      "filePath": "/Users/rafa/repos/codeflow/app/src/app/page.tsx",
+      "lineNumber": 6
     },
     "diagram->view#6": {
+      "path": "diagram->view#6",
+      "options": {},
       "filePath": "/Users/rafa/repos/codeflow/app/src/app/diagram.tsx",
-      "lineNumber": 7
+      "lineNumber": 20
     }
   }
 }

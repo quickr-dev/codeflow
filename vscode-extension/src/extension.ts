@@ -6,21 +6,22 @@ import { CodeflowDocumentManager } from "./codeflowDocumentManager";
 import { CodeflowGraphManager } from "./codeflowGraphManager";
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log(">>> CodeFlow Navigator is now active");
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  const rootPath = workspaceFolders?.[0].uri.fsPath;
+  if (!rootPath) {
+    vscode.window.showErrorMessage("No workspace folder found");
+    return;
+  }
 
-  const graphManager = new CodeflowGraphManager();
+  const graphManager = new CodeflowGraphManager(rootPath);
   const documentManager = new CodeflowDocumentManager(graphManager);
 
   // Initialize the graph by scanning files
-  const workspaceFolders = vscode.workspace.workspaceFolders;
-  if (workspaceFolders && workspaceFolders.length > 0) {
-    const rootPath = workspaceFolders[0].uri.fsPath;
-    graphManager.initializeGraph(rootPath).catch((err) => {
-      vscode.window.showErrorMessage(
-        `Failed to initialize CodeFlow graph: ${err.message}`,
-      );
-    });
-  }
+  graphManager.initializeGraph().catch((err) => {
+    vscode.window.showErrorMessage(
+      `Failed to initialize CodeFlow graph: ${err.message}`,
+    );
+  });
 
   const codeflowCompletionProvider =
     vscode.languages.registerCompletionItemProvider(
@@ -161,7 +162,7 @@ export function activate(context: vscode.ExtensionContext) {
           },
           async () => {
             try {
-              await graphManager.initializeGraph(rootPath, true);
+              await graphManager.initializeGraph(true);
               vscode.window.showInformationMessage(
                 "CodeFlow annotation scanning complete",
               );
@@ -202,6 +203,8 @@ export function activate(context: vscode.ExtensionContext) {
     scanCommand,
     fileWatcher,
   );
+
+  console.log(">>> CodeFlow Navigator is now active");
 }
 
 export function deactivate() {

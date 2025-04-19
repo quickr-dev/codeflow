@@ -1,6 +1,8 @@
 import { MemorySchema, memory } from "@/lib/memory";
 import type { NextRequest } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // @codeflow(diagram->view#4)
 export const POST = async (req: NextRequest) => {
   const data = await req.json();

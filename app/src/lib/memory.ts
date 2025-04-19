@@ -5,9 +5,6 @@ export const MemorySchema = z.object({
   annotations: z.array(
     z.object({
       path: z.string(),
-      options: z.object({
-        lineNumber: z.number().optional().default(15),
-      }),
       filePath: z.string(),
       lineNumber: z.number(),
       fileContent: z.string(),

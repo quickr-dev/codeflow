@@ -1,11 +1,6 @@
-export interface CodeflowNode {
-  filePath: string;
-  lineNumber: number;
-}
-
 export interface CodeflowGraph {
   nodes: {
-    [path: string]: CodeflowNode;
+    [path: string]: CodeflowAnnotation;
   };
 }
 

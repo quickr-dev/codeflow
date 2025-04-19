@@ -8,19 +8,22 @@ import { CodeflowAnnotation, CodeflowGraph } from "./types";
 
 export class CodeflowGraphManager {
   private graph: CodeflowGraph = { nodes: {} };
-  private annotations: Record<string, CodeflowAnnotation> = {};
+  private rootPath = "";
   private cachePath = "";
   private initialized = false;
+
+  constructor(rootPath: string) {
+    this.rootPath = rootPath;
+    this.cachePath = path.join(rootPath, ".codeflow", "graph.json");
+  }
 
   /**
    * Initialize the graph either from cache or by scanning files
    */
-  async initializeGraph(rootPath: string, forceRescan = false): Promise<void> {
+  async initializeGraph(forceRescan = false): Promise<void> {
     if (this.initialized && !forceRescan) {
       return;
     }
-
-    this.cachePath = path.join(rootPath, ".codeflow", "graph.json");
 
     try {
       // Check if cache directory exists, create if not
@@ -47,7 +50,7 @@ export class CodeflowGraphManager {
 
       // Scan project files
       this.graph = { nodes: {} };
-      await this.scanProject(rootPath);
+      await this.scanProject(this.rootPath);
       await this.saveGraphToCache();
       this.initialized = true;
     } catch (err) {
@@ -160,11 +163,7 @@ export class CodeflowGraphManager {
       const fileAnnotations = await scanFileForAnnotations(filePath);
 
       for (const annotation of fileAnnotations) {
-        this.annotations[annotation.path] = annotation;
-        this.graph.nodes[annotation.path] = {
-          filePath: filePath,
-          lineNumber: annotation.lineNumber,
-        };
+        this.graph.nodes[annotation.path] = annotation;
       }
     } catch (err) {
       console.error(`Error scanning file ${filePath}:`, err);
@@ -216,9 +215,14 @@ export class CodeflowGraphManager {
   async updateProject(): Promise<void> {
     const data: (CodeflowAnnotation & { fileContent: string })[] = [];
 
-    for (const annotation of Object.values(this.annotations)) {
+    for (const annotation of Object.values(this.graph.nodes)) {
+      const relativePath = path.relative(
+        path.dirname(this.rootPath),
+        annotation.filePath,
+      );
       data.push({
         ...annotation,
+        filePath: relativePath,
         fileContent: await fs.readFile(annotation.filePath, "utf-8"),
       });
     }
