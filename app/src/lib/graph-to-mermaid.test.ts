@@ -11,7 +11,7 @@ describe("convertGraphToMermaid", () => {
     ];
     const result = convertGraphToMermaid(paths);
 
-    expect(result).toStartWith(`flowchart TD
+    expect(result).toStartWith(`flowchart LR
 memory-->graph
 `);
   });
@@ -31,7 +31,7 @@ memory-->graph
     ];
     const result = convertGraphToMermaid(paths);
 
-    expect(result).toStartWith(`flowchart TD
+    expect(result).toStartWith(`flowchart LR
 memory-->graph
 app-->users
 users-->add
@@ -51,7 +51,7 @@ diagram-->add
     ];
     const result = convertGraphToMermaid(paths);
 
-    expect(result).toStartWith(`flowchart TD
+    expect(result).toStartWith(`flowchart LR
 memory-->graph
 edges-->diagram
 diagram-->view

@@ -25,7 +25,7 @@ export function convertGraphToMermaid(paths: string[]): string {
     }
   }
 
-  let result = "flowchart TD\n";
+  let result = "flowchart LR\n";
 
   for (const path of uniquePaths) {
     result += `${path}\n`;

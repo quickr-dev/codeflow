@@ -6,17 +6,17 @@
       "filePath": "/Users/rafa/repos/codeflow/app/src/app/api/graphs/route.ts",
       "lineNumber": 5
     },
-    "diagram->view#5": {
-      "path": "diagram->view#5",
-      "options": {},
-      "filePath": "/Users/rafa/repos/codeflow/app/src/app/page.tsx",
-      "lineNumber": 6
-    },
     "diagram->view#6": {
       "path": "diagram->view#6",
       "options": {},
       "filePath": "/Users/rafa/repos/codeflow/app/src/app/diagram.tsx",
-      "lineNumber": 20
+      "lineNumber": 7
+    },
+    "diagram->view#5": {
+      "path": "diagram->view#5",
+      "options": {},
+      "filePath": "/Users/rafa/repos/codeflow/app/src/app/page.tsx",
+      "lineNumber": 7
     }
   }
 }
