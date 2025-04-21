@@ -1,20 +1,31 @@
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
-use std::fs;
+use std::{fs, path::Path};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
-    pub api_key: String,
+    pub project: String,
 }
 
-/// Read config file containing the API key
-pub fn read_config() -> Result<Config> {
-    let home_dir = dirs::home_dir().context("Could not determine home directory")?;
-    let config_path = home_dir.join(".codeflow");
+// @codeflow(cli->init#3)
+/// Read config file from project directory
+pub fn create_config(dir: &Path) -> Result<()> {
+    let config_path = dir.join(".codeflow.json");
+    let config = Config {
+        project: "".to_string(),
+    };
+    let config_str = serde_json::to_string(&config).context("Failed to serialize config")?;
+    fs::write(&config_path, config_str).context("Failed to write config file")?;
 
-    let content =
-        fs::read_to_string(config_path).context("Failed to read config file at ~/.codeflow")?;
+    Ok(())
+}
 
-    let api_key = content.trim().to_string();
-    Ok(Config { api_key })
+// @codeflow(cli->push#4)
+/// Read config file from project directory
+pub fn read_config(dir: &Path) -> Result<Config> {
+    let config_path = dir.join(".codeflow.json");
+    let config_str = fs::read_to_string(&config_path).context("Failed to read config file")?;
+    let config: Config = serde_json::from_str(&config_str).context("Failed to parse config")?;
+
+    Ok(config)
 }

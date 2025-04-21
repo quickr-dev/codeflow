@@ -2,32 +2,33 @@ use anyhow::{Context, Result};
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
 use serde::Serialize;
 
-use crate::scanner::{Annotation, ScannedFile};
+use crate::{config::Config, scanner::ScannedFile};
 
 #[derive(Serialize)]
 struct Data {
-    annotations: Vec<Annotation>,
     files: Vec<ScannedFile>,
 }
 
-pub fn send_to_api(
-    annotations: Vec<Annotation>,
-    files: Vec<ScannedFile>,
-    api_key: &str,
-) -> Result<()> {
+// @codeflow(cli->init#4)
+// @codeflow(cli->push#5)
+pub fn send_to_api(files: Vec<ScannedFile>, config: &Config) -> Result<()> {
     let client = reqwest::blocking::Client::new();
 
     let mut headers = HeaderMap::new();
-    let auth_value = format!("Bearer {}", api_key);
+    let auth_value = format!("Bearer {}", "api_key");
     headers.insert(
         AUTHORIZATION,
         HeaderValue::from_str(&auth_value).context("Invalid authorization header value")?,
     );
 
+    let url = format!(
+        "http://localhost:8000/api/projects/{}/files",
+        config.project
+    );
     let response = client
-        .post("http://localhost:3000/new")
+        .post(url)
         .headers(headers)
-        .json(&Data { annotations, files })
+        .json(&Data { files })
         .send()
         .context("Failed to send data to API")?;
 

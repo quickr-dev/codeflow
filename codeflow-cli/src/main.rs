@@ -1,44 +1,54 @@
 mod api;
 mod config;
 mod scanner;
-mod validator;
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use std::env;
 use std::path::PathBuf;
 
-/// CLI tool that extracts @codeflow annotations from project files and sends them to a server
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-struct Args {
+struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
 }
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    Login,
+    // @codeflow(cli->init#1)
+    #[clap(about = "Create a .codeflow.json file")]
+    Init {
+        #[arg(short, long, value_name = "DIR")]
+        dir: Option<PathBuf>,
+    },
 
-    Update {
+    // @codeflow(cli->push#1)
+    #[clap(about = "Send annotations to server")]
+    Push {
         #[arg(short, long, value_name = "DIR")]
         dir: Option<PathBuf>,
     },
 }
 
 fn main() -> Result<()> {
-    let args = Args::parse();
+    let args = Cli::parse();
 
     match args.command {
-        Some(Commands::Login) => {
-            panic!("unimplemented")
+        // @codeflow(cli->init#2)
+        Some(Commands::Init { dir }) => {
+            let dir = dir.unwrap_or_else(|| env::current_dir().unwrap());
+            let _ = config::create_config(&dir);
+
+            Ok(())
         }
 
-        Some(Commands::Update { dir }) => {
-            let path = dir.unwrap_or_else(|| env::current_dir().unwrap());
-            let (annotations, files) = scanner::scan_directory(&path)?;
-            let api_key = config::read_config()?.api_key;
-            let _ = api::send_to_api(annotations, files, &api_key);
+        // @codeflow(cli->push#2)
+        Some(Commands::Push { dir }) => {
+            let dir = dir.unwrap_or_else(|| env::current_dir().unwrap());
+            let files = scanner::scan_directory(&dir)?;
+            let config = config::read_config(&dir)?;
+            let _ = api::send_to_api(files, &config);
 
             Ok(())
         }
