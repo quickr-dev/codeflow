@@ -3,15 +3,19 @@
 	"module": "index.ts",
 	"type": "module",
 	"scripts": {
-		"dev": "bun --hot run index.ts"
+		"dev": "bun --hot run index.tsx"
 	},
 	"devDependencies": {
-		"@types/bun": "latest"
+		"@types/bun": "latest",
+		"@types/react": "19.1.2",
+		"@types/react-dom": "19.1.2"
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
 	},
 	"dependencies": {
+		"react": "19.1.0",
+		"react-dom": "19.1.0",
 		"zod": "3.24.3"
 	}
 }

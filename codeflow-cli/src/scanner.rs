@@ -22,8 +22,13 @@ pub fn scan_directory(dir: &Path) -> Result<Vec<ScannedFile>> {
             let content = fs::read_to_string(path)?;
 
             if content.contains("@codeflow") {
+                let relative_path = path
+                    .display()
+                    .to_string()
+                    .replace(&(dir.display().to_string() + "/"), "");
+
                 files.push(ScannedFile {
-                    path: path.display().to_string(),
+                    path: relative_path,
                     content,
                 });
             }
