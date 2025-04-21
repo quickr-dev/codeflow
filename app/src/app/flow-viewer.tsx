@@ -1,6 +1,7 @@
 "use client";
 
-import type { Memory } from "@/lib/memory";
+import type { ProjectFile } from "@/db/schema";
+import type { CodeFlowAnnotation } from "@/lib/file-annotations";
 import Dagre from "@dagrejs/dagre";
 import {
   Background,
@@ -11,27 +12,44 @@ import {
   useEdgesState,
   useNodesState,
 } from "@xyflow/react";
-import { CodeEditorNode } from "./code-editor-node";
+import { CodeEditorNode, type CodeEditorNodeData } from "./code-editor-node";
 
 const nodeTypes = {
   codeEditor: CodeEditorNode,
 };
 
-export function FlowViewer({ flow }: { flow: Memory["annotations"] }) {
-  const sortedFlow = flow.sort((a, b) => a.path.localeCompare(b.path));
-  const initialNodes: Node[] = sortedFlow.map((node) => ({
-    id: node.path,
-    data: { node },
-    position: { x: 0, y: 0 },
-    type: "codeEditor",
-  }));
+interface FlowViewerProps {
+  annotations: CodeFlowAnnotation[];
+  projectFiles: ProjectFile[];
+}
+
+function getNodeId(annotation: CodeFlowAnnotation) {
+  return `node-${annotation.step}`;
+}
+
+export function FlowViewer({ annotations, projectFiles }: FlowViewerProps) {
+  const initialNodes: Node[] = annotations.map((node, i) => {
+    const annotation: CodeEditorNodeData = {
+      ...node,
+      fileContent:
+        projectFiles.find((f) => f.path === node.filePath)?.content ??
+        "File not found",
+    };
+
+    return {
+      id: getNodeId(node),
+      data: { annotation },
+      position: { x: 0, y: 0 },
+      type: "codeEditor",
+    };
+  });
 
   const initialEdges: Edge[] = [];
-  for (let i = 0; i < sortedFlow.length - 1; i++) {
+  for (let i = 0; i < annotations.length - 1; i++) {
     initialEdges.push({
-      id: `${sortedFlow[i].path}-${sortedFlow[i + 1].path}`,
-      source: sortedFlow[i].path,
-      target: sortedFlow[i + 1].path,
+      id: `edge-${i}`,
+      source: getNodeId(annotations[i]),
+      target: getNodeId(annotations[i + 1]),
       animated: true,
     });
   }
@@ -52,9 +70,16 @@ export function FlowViewer({ flow }: { flow: Memory["annotations"] }) {
         noWheelClassName="CodeEditorNode"
         panOnScroll
         fitView
+        fitViewOptions={{
+          nodes: [
+            { id: getNodeId(annotations[0]) },
+            { id: getNodeId(annotations[1]) },
+            { id: getNodeId(annotations[2]) },
+          ],
+        }}
       >
         <Background />
-        <Panel position="top-left">{flow[0].path.split("#")[0]}</Panel>
+        <Panel position="top-left">{annotations[0].path.split("#")[0]}</Panel>
       </ReactFlow>
     </>
   );

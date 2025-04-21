@@ -1,9 +1,4 @@
-/**
- * Converts an array of paths to Mermaid flowchart syntax
- * @param paths Array of paths in the format "node1->node2->node3#stepNumber"
- * @returns Mermaid flowchart syntax string
- */
-export function convertGraphToMermaid(paths: string[]): string {
+export function pathsToMermaid(paths: string[]): string {
   const uniquePaths = new Set<string>();
   const pathsWithoutIds = new Map<string, string[]>();
 

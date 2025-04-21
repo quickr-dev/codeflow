@@ -1,13 +1,17 @@
-import type { Memory } from "@/lib/memory";
+import type { CodeFlowAnnotation } from "@/lib/file-annotations";
 import { Handle, Position } from "@xyflow/react";
 import { CodeEditor } from "./code-editor";
 
 CodeEditorNode.WIDTH = 600;
 CodeEditorNode.HEIGHT = 400;
 
+export interface CodeEditorNodeData extends CodeFlowAnnotation {
+  fileContent: string;
+}
+
 interface CodeEditorNodeProps {
   data: {
-    node: Memory["annotations"][number];
+    annotation: CodeEditorNodeData;
   };
 }
 
@@ -19,15 +23,15 @@ export function CodeEditorNode({ data }: CodeEditorNodeProps) {
 
       <div className="border border-gray-300">
         <div className="border-b-2 py-1 px-2 bg-white border-gray-200">
-          {data.node.filePath}
+          {data.annotation.filePath}
         </div>
         <CodeEditor
           className="CodeEditorNode"
           autoFocus
-          lineNumber={data.node.lineNumber}
+          lineNumber={data.annotation.lineNumber}
           height={`${CodeEditorNode.HEIGHT}px`}
           width={`${CodeEditorNode.WIDTH}px`}
-          value={data.node.fileContent}
+          value={data.annotation.fileContent}
         />
       </div>
     </>

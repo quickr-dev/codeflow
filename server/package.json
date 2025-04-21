@@ -5,6 +5,16 @@
 	"scripts": {
 		"dev": "bun --hot run index.tsx"
 	},
+	"dependencies": {
+		"@codemirror/lang-javascript": "6.2.3",
+		"@dagrejs/dagre": "1.1.4",
+		"@uiw/react-codemirror": "4.23.10",
+		"@xyflow/react": "12.6.0",
+		"mermaid": "11.6.0",
+		"react": "19.1.0",
+		"react-dom": "19.1.0",
+		"zod": "3.24.3"
+	},
 	"devDependencies": {
 		"@types/bun": "latest",
 		"@types/react": "19.1.2",
@@ -12,10 +22,5 @@
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
-	},
-	"dependencies": {
-		"react": "19.1.0",
-		"react-dom": "19.1.0",
-		"zod": "3.24.3"
 	}
 }

@@ -1,34 +1,51 @@
 "use client";
 
-import { convertGraphToMermaid } from "@/lib/graph-to-mermaid";
-import type { Memory } from "@/lib/memory";
 import mermaid from "mermaid";
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
+
+declare global {
+  interface Window {
+    didClickLeafNode: (nodeId: string) => void;
+  }
+}
 
 // @codeflow(diagram->view#6)
-export function Diagram({ graph }: { graph: Memory["annotations"] }) {
+export function Diagram({ mermaidString }: { mermaidString: string }) {
+  const mermaidRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
   useEffect(() => {
-    window.didClickLeafNode = (nodeId: string) => {
-      location.href = `?node=${nodeId}`;
-    };
+    if (mermaidRef.current) {
+      window.didClickLeafNode = (nodeId: string) => {
+        const searchParams = new URLSearchParams({
+          node: nodeId,
+        });
+        router.push(`?${searchParams.toString()}`);
+      };
 
-    mermaid.initialize({
-      startOnLoad: true,
-      securityLevel: "loose",
-      theme: "default",
-      flowchart: {
-        useMaxWidth: true,
-        htmlLabels: true,
-        curve: "cardinal",
-      },
-    });
-  }, []);
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "default",
+        securityLevel: "loose",
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: "cardinal",
+        },
+      });
 
-  return (
-    <div>
-      <pre className="mermaid">
-        {convertGraphToMermaid(graph.map((node) => node.path))}
-      </pre>
-    </div>
-  );
+      mermaidRef.current.innerHTML = "";
+
+      const id = `mermaid-${Math.random().toString(36).substring(2, 11)}`;
+      mermaid.render(id, mermaidString).then((result) => {
+        if (mermaidRef.current) {
+          mermaidRef.current.innerHTML = result.svg;
+          result.bindFunctions?.(mermaidRef.current);
+        }
+      });
+    }
+  }, [mermaidString, router.push]);
+
+  return <div ref={mermaidRef} />;
 }

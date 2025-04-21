@@ -1,8 +1,8 @@
+import { HomePage } from "@client/ui/home-page";
+import { Layout } from "@client/ui/layout";
 import { serve } from "bun";
 import { renderToReadableStream } from "react-dom/server";
 import { z } from "zod";
-import { HomePage } from "./client/home-page";
-import { Layout } from "./client/layout";
 import { db } from "./lib/db";
 import { ProjectFileSchema } from "./lib/schemas";
 
@@ -19,7 +19,7 @@ const server = serve({
 
 			const stream = await renderToReadableStream(
 				<Layout>
-					<HomePage files={projectFiles} />
+					<HomePage projectFiles={projectFiles} />
 				</Layout>,
 			);
 

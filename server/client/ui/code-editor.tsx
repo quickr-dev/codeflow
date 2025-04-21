@@ -13,10 +13,9 @@ export function CodeEditor({
 }: CodeEditorProps) {
   const editorRef = useRef<EditorView | null>(null);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (editorRef.current && lineNumber !== undefined) {
-      const line = editorRef.current.state.doc.line(lineNumber).from;
+      const line = editorRef.current.state.doc.line(lineNumber + 1).from;
 
       editorRef.current.dispatch({
         selection: { anchor: line },
