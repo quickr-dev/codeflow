@@ -1,4 +1,5 @@
 import { javascript } from "@codemirror/lang-javascript";
+import { rust } from "@codemirror/lang-rust";
 import type { EditorView } from "@codemirror/view";
 import CodeMirror, { type ReactCodeMirrorProps } from "@uiw/react-codemirror";
 import { useEffect, useRef } from "react";
@@ -32,7 +33,7 @@ export function CodeEditor({
       onCreateEditor={(view) => {
         editorRef.current = view;
       }}
-      extensions={[javascript({ typescript: true, jsx: true })]}
+      extensions={[javascript({ typescript: true, jsx: true }), rust()]}
     />
   );
 }
