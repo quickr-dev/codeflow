@@ -28,7 +28,7 @@ function getNodeId(annotation: CodeFlowAnnotation) {
 }
 
 export function FlowViewer({ annotations, projectFiles }: FlowViewerProps) {
-  const initialNodes: Node[] = annotations.map((node, i) => {
+  const initialNodes: Node[] = annotations.map((node) => {
     const annotation: CodeEditorNodeData = {
       ...node,
       fileContent:
@@ -55,8 +55,8 @@ export function FlowViewer({ annotations, projectFiles }: FlowViewerProps) {
   }
 
   const layouted = getLayoutedElements(initialNodes, initialEdges);
-  const [nodes, _setNodes, onNodesChange] = useNodesState(layouted.nodes);
-  const [edges, _setEdges, onEdgesChange] = useEdgesState(layouted.edges);
+  const [nodes, , onNodesChange] = useNodesState(layouted.nodes);
+  const [edges, , onEdgesChange] = useEdgesState(layouted.edges);
 
   return (
     <>

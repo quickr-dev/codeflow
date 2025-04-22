@@ -45,7 +45,7 @@ export function Diagram({ mermaidString }: { mermaidString: string }) {
         }
       });
     }
-  }, [mermaidString, router.push]);
+  }, [mermaidString, router]);
 
   return <div ref={mermaidRef} />;
 }

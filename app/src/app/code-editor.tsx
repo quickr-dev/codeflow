@@ -13,7 +13,6 @@ export function CodeEditor({
 }: CodeEditorProps) {
   const editorRef = useRef<EditorView | null>(null);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (editorRef.current && lineNumber !== undefined) {
       const line = editorRef.current.state.doc.line(lineNumber).from;
@@ -24,7 +23,7 @@ export function CodeEditor({
       });
       editorRef.current.focus();
     }
-  }, [lineNumber, editorRef.current]);
+  }, [lineNumber]);
 
   return (
     <CodeMirror

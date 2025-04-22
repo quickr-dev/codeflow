@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
 declare global {
+  // eslint-disable-next-line
   var pg: ReturnType<typeof postgres> | undefined;
 }
 
