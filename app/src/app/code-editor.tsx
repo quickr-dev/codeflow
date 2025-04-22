@@ -13,6 +13,7 @@ export function CodeEditor({
 }: CodeEditorProps) {
   const editorRef = useRef<EditorView | null>(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Biome complains about the ref in the deps but it doesn't work without it.
   useEffect(() => {
     if (editorRef.current && lineNumber !== undefined) {
       const line = editorRef.current.state.doc.line(lineNumber).from;
@@ -23,7 +24,7 @@ export function CodeEditor({
       });
       editorRef.current.focus();
     }
-  }, [lineNumber]);
+  }, [lineNumber, editorRef.current]);
 
   return (
     <CodeMirror
