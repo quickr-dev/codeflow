@@ -17,13 +17,13 @@ export default async function Page({ searchParams, params }: Props) {
     .from(projectFilesTbl)
     .where(eq(projectFilesTbl.project, (await params).id));
 
-  const annotations = buildAnnotations(projectFiles);
-  const paths = Object.keys(annotations);
+  const annotationsByPath = buildAnnotations(projectFiles);
+  const paths = Object.keys(annotationsByPath);
   const mermaidString = pathsToMermaid(paths);
 
   // @codeflow(diagram->view#5)
   const selectedNode = (await searchParams).node;
-  const selectedFlow = annotations[selectedNode];
+  const selectedPathAnnotations = annotationsByPath[selectedNode];
 
   return (
     <div className="p-6">
@@ -35,9 +35,12 @@ export default async function Page({ searchParams, params }: Props) {
         )}
       </div>
 
-      {selectedFlow && (
+      {selectedPathAnnotations && (
         <div className="h-150">
-          <FlowViewer annotations={selectedFlow} projectFiles={projectFiles} />
+          <FlowViewer
+            annotations={selectedPathAnnotations}
+            projectFiles={projectFiles}
+          />
         </div>
       )}
     </div>

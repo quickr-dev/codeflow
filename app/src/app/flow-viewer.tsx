@@ -12,6 +12,7 @@ import {
   useEdgesState,
   useNodesState,
 } from "@xyflow/react";
+import { useEffect } from "react";
 import { CodeEditorNode, type CodeEditorNodeData } from "./code-editor-node";
 
 const nodeTypes = {
@@ -24,39 +25,44 @@ interface FlowViewerProps {
 }
 
 function getNodeId(annotation: CodeFlowAnnotation) {
-  return `node-${annotation.step}`;
+  return `${annotation.path}#${annotation.step}`;
 }
 
 export function FlowViewer({ annotations, projectFiles }: FlowViewerProps) {
-  const initialNodes: Node[] = annotations.map((node) => {
-    const annotation: CodeEditorNodeData = {
-      ...node,
-      fileContent:
-        projectFiles.find((f) => f.path === node.filePath)?.content ??
-        "File not found",
-    };
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
-    return {
-      id: getNodeId(node),
-      data: { annotation },
-      position: { x: 0, y: 0 },
-      type: "codeEditor",
-    };
-  });
+  useEffect(() => {
+    const initialNodes: Node[] = annotations.map((node) => {
+      const annotation: CodeEditorNodeData = {
+        ...node,
+        fileContent:
+          projectFiles.find((f) => f.path === node.filePath)?.content ??
+          "File not found",
+      };
 
-  const initialEdges: Edge[] = [];
-  for (let i = 0; i < annotations.length - 1; i++) {
-    initialEdges.push({
-      id: `edge-${i}`,
-      source: getNodeId(annotations[i]),
-      target: getNodeId(annotations[i + 1]),
-      animated: true,
+      return {
+        id: getNodeId(node),
+        data: { annotation },
+        position: { x: 0, y: 0 },
+        type: "codeEditor",
+      };
     });
-  }
 
-  const layouted = getLayoutedElements(initialNodes, initialEdges);
-  const [nodes, , onNodesChange] = useNodesState(layouted.nodes);
-  const [edges, , onEdgesChange] = useEdgesState(layouted.edges);
+    const initialEdges: Edge[] = [];
+    for (let i = 0; i < annotations.length - 1; i++) {
+      initialEdges.push({
+        id: `edge-${getNodeId(annotations[i])}->${getNodeId(annotations[i + 1])}`,
+        source: getNodeId(annotations[i]),
+        target: getNodeId(annotations[i + 1]),
+        animated: true,
+      });
+    }
+
+    const layouted = getLayoutedElements(initialNodes, initialEdges);
+    setNodes(layouted.nodes);
+    setEdges(layouted.edges);
+  }, [annotations, projectFiles, setNodes, setEdges]);
 
   return (
     <>
