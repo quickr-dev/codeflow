@@ -4,6 +4,7 @@ mod scanner;
 
 use anyhow::Result;
 use clap::{CommandFactory, Parser, Subcommand};
+use open;
 use std::env;
 use std::path::PathBuf;
 
@@ -29,6 +30,12 @@ enum Commands {
         #[arg(short, long, value_name = "DIR")]
         dir: Option<PathBuf>,
     },
+
+    #[clap(about = "Open codeflow in the browser")]
+    Open {
+        #[arg(short, long, value_name = "DIR")]
+        dir: Option<PathBuf>,
+    },
 }
 
 fn main() -> Result<()> {
@@ -49,6 +56,23 @@ fn main() -> Result<()> {
             let files = scanner::scan_directory(&dir)?;
             let config = config::read_config(&dir)?;
             let _ = api::send_to_api(files, &config);
+
+            Ok(())
+        }
+        Some(Commands::Open { dir }) => {
+            let dir = dir.unwrap_or_else(|| env::current_dir().unwrap());
+            let config = config::read_config(&dir)?;
+
+            let url = format!(
+                "https://dev-codeflow.vercel.app/projects/{}",
+                config.project
+            );
+
+            if let Err(e) = open::that(&url) {
+                eprintln!("Failed to open URL: {}", e);
+            } else {
+                println!("Opening project in browser: {}", url);
+            }
 
             Ok(())
         }
