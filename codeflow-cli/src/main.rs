@@ -3,7 +3,7 @@ mod config;
 mod scanner;
 
 use anyhow::Result;
-use clap::{Parser, Subcommand};
+use clap::{CommandFactory, Parser, Subcommand};
 use std::env;
 use std::path::PathBuf;
 
@@ -53,6 +53,9 @@ fn main() -> Result<()> {
             Ok(())
         }
 
-        None => Ok(()),
+        None => {
+            Cli::command().print_help()?;
+            Ok(())
+        }
     }
 }
