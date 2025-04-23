@@ -32,6 +32,9 @@ export function CodeEditorNode({ data }: CodeEditorNodeProps) {
           height={`${CodeEditorNode.HEIGHT}px`}
           width={`${CodeEditorNode.WIDTH}px`}
           value={data.annotation.fileContent}
+          highlightRegExp={
+            new RegExp(`@codeflow\\(${data.annotation.path}.*\\)`, "ig")
+          }
         />
       </div>
     </>
