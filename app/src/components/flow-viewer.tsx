@@ -74,7 +74,7 @@ function _FlowViewer({ annotations, projectFiles }: FlowViewerProps) {
     setNodes(layouted.nodes);
     setEdges(layouted.edges);
     fitView();
-  }, [annotations, projectFiles, setNodes, setEdges]);
+  }, [annotations, projectFiles, setNodes, setEdges, fitView]);
 
   const fitNodes = annotations
     .slice(0, 3)
