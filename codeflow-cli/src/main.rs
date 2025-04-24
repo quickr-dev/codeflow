@@ -53,9 +53,17 @@ fn main() -> Result<()> {
         // @codeflow(cli->push#2)
         Some(Commands::Push { dir }) => {
             let dir = dir.unwrap_or_else(|| env::current_dir().unwrap());
-            let files = scanner::scan_directory(&dir)?;
-            let config = config::read_config(&dir)?;
-            let _ = api::send_to_api(files, &config);
+            let (files, scanned_files) = scanner::scan_directory(&dir)?;
+            println!(
+                "Found {} of {} files with annotations",
+                files.len(),
+                scanned_files,
+            );
+
+            if files.len() > 0 {
+                let config = config::read_config(&dir)?;
+                let _ = api::send_to_api(files, &config);
+            }
 
             Ok(())
         }
