@@ -28,9 +28,6 @@ export function Diagram({ mermaidString }: { mermaidString: string }) {
         startOnLoad: true,
         theme: "base",
         securityLevel: "loose",
-        themeVariables: {
-          primaryColor: "#fff",
-        },
         flowchart: {
           useMaxWidth: true,
           htmlLabels: true,

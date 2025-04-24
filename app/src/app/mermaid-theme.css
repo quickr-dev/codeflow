@@ -1,30 +1,20 @@
 
 @layer components {
-  .label-container {
-    @apply stroke-gray-300!;
-  }
+  /* Node */
+  .node .label-container { @apply fill-white! stroke-gray-300! }
 
-  .node.clickable {
-    > .label-container {
-      @apply stroke-gray-500!;
+  /* Clickable node */
+  .node.clickable .label-container { @apply stroke-gray-500! }
+  .node.clickable .nodeLabel { @apply underline decoration-dashed! underline-offset-4 }
 
-      + .label .nodeLabel p {
-        @apply underline decoration-dashed! underline-offset-4;
-      }
-    }
+  /* Clickable node: hover */
+  .node.clickable:hover .label-container { @apply transition-all stroke-violet-300! fill-violet-50! }
+  .node.clickable:hover .nodeLabel { @apply text-violet-800! }
 
-    &:hover > .label-container {
-      @apply transition-all;
-      @apply stroke-violet-300!;
-      @apply fill-violet-50!;
+  /* Clickable node: active */
+  .node.clickable:active .label-container { @apply fill-violet-100! }
 
-      + .label .nodeLabel {
-        @apply text-violet-800!;
-      }
-    }
-
-    &:active > .label-container {
-      @apply fill-violet-100!;
-    }
-  }
+  /* Selected node */
+  .node.selected-node .label-container { @apply stroke-violet-400! stroke-2!  }
+  .node.selected-node .nodeLabel { @apply text-violet-800! }
 }

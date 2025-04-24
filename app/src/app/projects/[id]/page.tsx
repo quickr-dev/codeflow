@@ -19,11 +19,11 @@ export default async function Page({ searchParams, params }: Props) {
 
   const annotationsByPath = buildAnnotations(projectFiles);
   const paths = Object.keys(annotationsByPath);
-  const mermaidString = pathsToMermaid(paths);
 
   // @codeflow(diagram->view#5)
   const selectedNode = (await searchParams).node;
   const selectedPathAnnotations = annotationsByPath[selectedNode];
+  const mermaidString = pathsToMermaid(paths, selectedNode);
 
   return (
     <div className="p-6">

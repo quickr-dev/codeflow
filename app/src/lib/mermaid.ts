@@ -1,35 +1,74 @@
-export function pathsToMermaid(paths: string[]): string {
-  const uniquePaths = new Set<string>();
-  const pathsWithoutIds = new Map<string, string[]>();
+interface ParsedPath {
+  fullPath: string;
+  segments: string[];
+  leafNode: string;
+}
+
+interface PathData {
+  connections: Set<string>;
+  leafNodePaths: Map<string, string[]>;
+  selectedNode: string | null;
+}
+
+function parsePath(path: string): ParsedPath {
+  const [fullPath] = path.split("#");
+  const segments = fullPath.split("->");
+  const leafNode = segments[segments.length - 1];
+
+  return { fullPath, segments, leafNode };
+}
+
+/**
+ * Extract connections and leaf node data from paths
+ */
+function extractPathData(paths: string[], selectedPath?: string): PathData {
+  const connections = new Set<string>();
+  const leafNodePaths = new Map<string, string[]>();
+  let selectedNode: string | null = null;
 
   for (const path of paths) {
-    const [fullPath] = path.split("#");
+    const { fullPath, segments, leafNode } = parsePath(path);
 
-    const pathSegments = fullPath.split("->");
-    const leafNodePath = pathSegments.join("->");
-    const leafNode = pathSegments[pathSegments.length - 1];
-
-    if (!pathsWithoutIds.has(leafNode)) {
-      pathsWithoutIds.set(leafNode, []);
+    // Check if this is the selected path
+    if (selectedPath && fullPath === selectedPath) {
+      selectedNode = leafNode;
     }
-    pathsWithoutIds.get(leafNode)?.push(leafNodePath);
 
-    for (let i = 0; i < pathSegments.length - 1; i++) {
-      const connection = `${pathSegments[i]}-->${pathSegments[i + 1]}`;
-      uniquePaths.add(connection);
+    // Store leaf node paths for click handlers
+    if (!leafNodePaths.has(leafNode)) {
+      leafNodePaths.set(leafNode, []);
+    }
+    leafNodePaths.get(leafNode)?.push(fullPath);
+
+    // Create connections between nodes
+    for (let i = 0; i < segments.length - 1; i++) {
+      const connection = `${segments[i]}-->${segments[i + 1]}`;
+      connections.add(connection);
     }
   }
 
+  return { connections, leafNodePaths, selectedNode };
+}
+
+function generateMermaidCode(pathData: PathData): string {
+  const { connections, leafNodePaths, selectedNode } = pathData;
   let result = "flowchart LR\n";
 
-  for (const path of uniquePaths) {
-    result += `${path}\n`;
+  // Add connections
+  for (const connection of connections) {
+    result += `${connection}\n`;
   }
 
-  if (pathsWithoutIds.size > 0) {
+  // Add class for selected node if applicable
+  if (selectedNode) {
+    result += `\nclass ${selectedNode} selected-node\n`;
+  }
+
+  // Add click handlers for leaf nodes
+  if (leafNodePaths.size > 0) {
     result += "\n";
 
-    for (const [leafNode, fullPaths] of pathsWithoutIds.entries()) {
+    for (const [leafNode, fullPaths] of leafNodePaths.entries()) {
       const uniqueFullPaths = [...new Set(fullPaths)];
 
       for (const fullPath of uniqueFullPaths) {
@@ -39,4 +78,12 @@ export function pathsToMermaid(paths: string[]): string {
   }
 
   return result;
+}
+
+/**
+ * Convert path strings to Mermaid flowchart definition
+ */
+export function pathsToMermaid(paths: string[], selectedPath?: string): string {
+  const pathData = extractPathData(paths, selectedPath);
+  return generateMermaidCode(pathData);
 }
