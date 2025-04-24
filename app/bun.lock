@@ -6,6 +6,7 @@
       "dependencies": {
         "@codemirror/lang-javascript": "6.2.3",
         "@codemirror/lang-rust": "6.0.1",
+        "@codemirror/view": "6.36.5",
         "@dagrejs/dagre": "1.1.4",
         "@uiw/react-codemirror": "4.23.10",
         "@xyflow/react": "12.6.0",
