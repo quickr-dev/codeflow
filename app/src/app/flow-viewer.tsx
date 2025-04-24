@@ -64,6 +64,10 @@ export function FlowViewer({ annotations, projectFiles }: FlowViewerProps) {
     setEdges(layouted.edges);
   }, [annotations, projectFiles, setNodes, setEdges]);
 
+  const fitNodes = annotations
+    .slice(0, 3)
+    .map((node) => ({ id: getNodeId(node) }));
+
   return (
     <>
       <ReactFlow
@@ -77,11 +81,7 @@ export function FlowViewer({ annotations, projectFiles }: FlowViewerProps) {
         panOnScroll
         fitView
         fitViewOptions={{
-          nodes: [
-            { id: getNodeId(annotations[0]) },
-            { id: getNodeId(annotations[1]) },
-            { id: getNodeId(annotations[2]) },
-          ],
+          nodes: fitNodes,
         }}
       >
         <Background />
