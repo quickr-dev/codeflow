@@ -9,8 +9,10 @@ import {
   type Node,
   Panel,
   ReactFlow,
+  ReactFlowProvider,
   useEdgesState,
   useNodesState,
+  useReactFlow,
 } from "@xyflow/react";
 import { useEffect } from "react";
 import { CodeEditorNode, type CodeEditorNodeData } from "./code-editor-node";
@@ -29,6 +31,15 @@ function getNodeId(annotation: CodeFlowAnnotation) {
 }
 
 export function FlowViewer({ annotations, projectFiles }: FlowViewerProps) {
+  return (
+    <ReactFlowProvider>
+      <_FlowViewer annotations={annotations} projectFiles={projectFiles} />
+    </ReactFlowProvider>
+  );
+}
+
+function _FlowViewer({ annotations, projectFiles }: FlowViewerProps) {
+  const { fitView } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
@@ -62,6 +73,7 @@ export function FlowViewer({ annotations, projectFiles }: FlowViewerProps) {
     const layouted = getLayoutedElements(initialNodes, initialEdges);
     setNodes(layouted.nodes);
     setEdges(layouted.edges);
+    fitView();
   }, [annotations, projectFiles, setNodes, setEdges]);
 
   const fitNodes = annotations
