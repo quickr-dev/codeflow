@@ -1,0 +1,30 @@
+
+@layer components {
+  .label-container {
+    @apply stroke-gray-300!;
+  }
+
+  .node.clickable {
+    > .label-container {
+      @apply stroke-gray-500!;
+
+      + .label .nodeLabel p {
+        @apply underline decoration-dashed! underline-offset-4;
+      }
+    }
+
+    &:hover > .label-container {
+      @apply transition-all;
+      @apply stroke-violet-300!;
+      @apply fill-violet-50!;
+
+      + .label .nodeLabel {
+        @apply text-violet-800!;
+      }
+    }
+
+    &:active > .label-container {
+      @apply fill-violet-100!;
+    }
+  }
+}
