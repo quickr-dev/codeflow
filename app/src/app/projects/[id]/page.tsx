@@ -36,7 +36,7 @@ export default async function Page({ searchParams, params }: Props) {
       </div>
 
       {selectedPathAnnotations && (
-        <div className="h-150">
+        <div className="h-150 mt-10">
           <FlowViewer
             annotations={selectedPathAnnotations}
             projectFiles={projectFiles}
