@@ -13,7 +13,7 @@ import { createRoot } from "react-dom/client";
  * Highlights @codeflow annotations
  */
 export function codeflowHighlighter(path: string) {
-  const regexp = new RegExp(`@codeflow\\((${path}#\\d+)\\)`, "g");
+  const regexp = new RegExp(`@codeflow\\((${path}(#\\d+)?)\\)`, "g");
 
   const placeholderMatcher = new MatchDecorator({
     regexp,
