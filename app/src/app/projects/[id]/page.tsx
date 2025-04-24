@@ -1,10 +1,10 @@
-import { FlowViewer } from "@/app/flow-viewer";
+import { Diagram } from "@/components/diagram";
+import { FlowViewer } from "@/components/flow-viewer";
 import { db } from "@/db/db";
 import { projectFilesTbl } from "@/db/schema";
 import { buildAnnotations } from "@/lib/file-annotations";
 import { pathsToMermaid } from "@/lib/mermaid";
 import { eq } from "drizzle-orm";
-import { Diagram } from "../../diagram";
 
 type Props = {
   params: Promise<{ id: string }>;

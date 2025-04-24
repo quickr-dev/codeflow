@@ -1,6 +1,7 @@
 import type { CodeFlowAnnotation } from "@/lib/file-annotations";
 import { Handle, Position } from "@xyflow/react";
-import { CodeEditor } from "./code-editor";
+import { CodeEditor } from "./code-editor/code-editor";
+import { codeflowHighlighter } from "./code-editor/codeflow-highlighter";
 
 CodeEditorNode.WIDTH = 600;
 CodeEditorNode.HEIGHT = 600;
@@ -37,9 +38,7 @@ export function CodeEditorNode({ data }: CodeEditorNodeProps) {
           height={`${CodeEditorNode.HEIGHT}px`}
           width={`${CodeEditorNode.WIDTH}px`}
           value={data.annotation.fileContent}
-          highlightRegExp={
-            new RegExp(`@codeflow\\(${data.annotation.path}.*\\)`, "ig")
-          }
+          extensions={[codeflowHighlighter(data.annotation.path)]}
         />
       </div>
     </>
