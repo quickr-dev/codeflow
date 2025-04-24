@@ -1,0 +1,15 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug 'push' command",
+			"cargo": {
+				"args": ["build", "--bin=codeflow"]
+			},
+			"args": ["push", "--dir=."],
+			"cwd": "${workspaceFolder}"
+		}
+	]
+}
