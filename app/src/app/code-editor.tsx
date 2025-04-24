@@ -19,6 +19,57 @@ interface CodeEditorProps extends ReactCodeMirrorProps {
   lineNumber?: number;
   highlightRegExp?: RegExp;
 }
+export function CodeEditor({
+  lineNumber,
+  highlightRegExp,
+  ...codemirrorProps
+}: CodeEditorProps) {
+  const editorRef = useRef<EditorView | null>(null);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Need to rerender when props change but Biome complains because they're not being used in useEffect.
+  useEffect(() => {
+    if (editorRef.current && lineNumber !== undefined) {
+      // Scroll down so that the active line is shown at the top
+      const scrollIntoLine = Math.min(
+        lineNumber + 30,
+        editorRef.current.state.doc.lines,
+      );
+
+      editorRef.current.dispatch({
+        selection: {
+          anchor: editorRef.current.state.doc.line(scrollIntoLine).from,
+        },
+        scrollIntoView: true,
+      });
+      // Move cursor to the active line but do not scroll the editor
+      editorRef.current.dispatch({
+        selection: {
+          anchor: editorRef.current.state.doc.line(lineNumber).from,
+        },
+        scrollIntoView: false,
+      });
+
+      editorRef.current.focus();
+    }
+  }, [lineNumber, codemirrorProps]);
+
+  const extensions: Extension[] = [
+    javascript({ typescript: true, jsx: true }),
+    rust(),
+  ];
+  if (highlightRegExp) {
+    extensions.push(codeflowHighlighter(highlightRegExp));
+  }
+  return (
+    <CodeMirror
+      {...codemirrorProps}
+      onCreateEditor={(view) => {
+        editorRef.current = view;
+      }}
+      extensions={extensions}
+    />
+  );
+}
 
 class PlaceholderWidget extends WidgetType {
   private text: string;
@@ -28,11 +79,11 @@ class PlaceholderWidget extends WidgetType {
     this.text = text;
   }
 
-  toDOM(view: EditorView): HTMLElement {
-    const div = document.createElement("span");
-    div.className = "font-bold";
-    div.innerHTML = this.text;
-    return div;
+  toDOM(): HTMLElement {
+    const el = document.createElement("span");
+    el.className = "px-1 py-0.5 bg-violet-100 text-violet-700 rounded text-xs";
+    el.innerHTML = this.text;
+    return el;
   }
 }
 
@@ -65,43 +116,5 @@ function codeflowHighlighter(regexp: RegExp) {
           return view.plugin(plugin)?.placeholders || Decoration.none;
         }),
     },
-  );
-}
-
-export function CodeEditor({
-  lineNumber,
-  highlightRegExp,
-  ...codemirrorProps
-}: CodeEditorProps) {
-  const editorRef = useRef<EditorView | null>(null);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Need to rerender when props change but Biome complains because they're not being used in useEffect.
-  useEffect(() => {
-    if (editorRef.current && lineNumber !== undefined) {
-      const line = editorRef.current.state.doc.line(lineNumber).from;
-
-      editorRef.current.dispatch({
-        selection: { anchor: line },
-        scrollIntoView: true,
-      });
-      editorRef.current.focus();
-    }
-  }, [lineNumber, codemirrorProps]);
-
-  const extensions: Extension[] = [
-    javascript({ typescript: true, jsx: true }),
-    rust(),
-  ];
-  if (highlightRegExp) {
-    extensions.push(codeflowHighlighter(highlightRegExp));
-  }
-  return (
-    <CodeMirror
-      {...codemirrorProps}
-      onCreateEditor={(view) => {
-        editorRef.current = view;
-      }}
-      extensions={extensions}
-    />
   );
 }
