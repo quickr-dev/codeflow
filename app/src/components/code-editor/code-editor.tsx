@@ -1,8 +1,7 @@
-import { javascript } from "@codemirror/lang-javascript";
-import { rust } from "@codemirror/lang-rust";
 import type { EditorView } from "@codemirror/view";
 import CodeMirror, { type ReactCodeMirrorProps } from "@uiw/react-codemirror";
 import { useEffect, useRef } from "react";
+import { scrollToLine } from "./go-to-line";
 
 interface CodeEditorProps extends ReactCodeMirrorProps {
   lineNumber?: number;
@@ -11,7 +10,6 @@ interface CodeEditorProps extends ReactCodeMirrorProps {
 export function CodeEditor({
   lineNumber,
   highlightRegExp,
-  extensions,
   ...codemirrorProps
 }: CodeEditorProps) {
   const editorRef = useRef<EditorView | null>(null);
@@ -20,23 +18,7 @@ export function CodeEditor({
   useEffect(() => {
     if (editorRef.current && lineNumber !== undefined) {
       const editor = editorRef.current;
-      const scrollIntoLine = Math.min(lineNumber + 30, editor.state.doc.lines);
-
-      editor.dispatch({
-        selection: {
-          anchor: editor.state.doc.line(scrollIntoLine).from,
-        },
-        scrollIntoView: true,
-      });
-
-      editor.dispatch({
-        selection: {
-          anchor: editor.state.doc.line(lineNumber).from,
-        },
-        scrollIntoView: false,
-      });
-
-      editorRef.current.focus();
+      scrollToLine(editor, lineNumber);
     }
   }, [lineNumber, codemirrorProps]);
 
@@ -46,11 +28,6 @@ export function CodeEditor({
       onCreateEditor={(view) => {
         editorRef.current = view;
       }}
-      extensions={[
-        javascript({ typescript: true, jsx: true }),
-        rust(),
-        ...(extensions || []),
-      ]}
     />
   );
 }
