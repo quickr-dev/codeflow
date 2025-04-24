@@ -82,6 +82,7 @@ export function FlowViewer({ annotations, projectFiles }: FlowViewerProps) {
         fitView
         fitViewOptions={{
           nodes: fitNodes,
+          maxZoom: 1,
         }}
       >
         <Background />
