@@ -12,14 +12,24 @@ pub struct ScannedFile {
 
 // @codeflow(cli->push#3)
 /// Scans a directory for files containing the @codeflow annotation
-pub fn scan_directory(dir: &Path) -> Result<Vec<ScannedFile>> {
+pub fn scan_directory(dir: &Path) -> Result<(Vec<ScannedFile>, i32)> {
     let mut files = Vec::new();
+    let mut scanned_files = 0;
 
     for result in Walk::new(dir) {
+        scanned_files += 1;
+
         let entry = result?;
         let path = entry.path();
         if path.is_file() {
-            let content = fs::read_to_string(path)?;
+            // Ignore binary files
+            let content = match fs::read_to_string(path) {
+                Ok(text) => text,
+                Err(_) => {
+                    // println!("Ignored {}", path.display());
+                    continue;
+                }
+            };
 
             if content.contains("@codeflow") {
                 let relative_path = path
@@ -35,5 +45,5 @@ pub fn scan_directory(dir: &Path) -> Result<Vec<ScannedFile>> {
         }
     }
 
-    Ok(files)
+    Ok((files, scanned_files))
 }
