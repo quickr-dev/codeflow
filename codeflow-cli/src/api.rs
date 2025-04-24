@@ -22,7 +22,7 @@ pub fn send_to_api(files: Vec<ScannedFile>, config: &Config) -> Result<()> {
     );
 
     let url = format!(
-        "http://localhost:8000/api/projects/{}/files",
+        "https://dev-codeflow.vercel.app/api/projects/{}/files",
         config.project
     );
     let response = client
